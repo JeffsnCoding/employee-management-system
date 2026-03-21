@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://api.jeffsncoding.uk/api',
+  VITE_API_BASE_URL=https://api.jeffsncoding.uk,
   timeout: 10000
 })
 

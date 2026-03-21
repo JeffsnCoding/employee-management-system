@@ -1,6 +1,7 @@
 # SQLite3编译错误修复指南
 
 ## 错误信息
+
 ```
 Error: /opt/render/project/src/backend/node_modules/sqlite3/build/Release/node_sqlite3.node: invalid ELF header
 ```
@@ -52,6 +53,7 @@ Error: /opt/render/project/src/backend/node_modules/sqlite3/build/Release/node_s
 ```
 
 **关键说明：**
+
 - `postinstall` 脚本会在 `npm install` 后自动执行
 - `npm rebuild sqlite3` 会在部署环境中重新编译sqlite3
 
@@ -72,23 +74,27 @@ git push origin main
 4. 配置服务：
 
 **基本信息：**
+
 - **Name**: `employee-backend`
 - **Region**: `Singapore`
 - **Branch**: `main`
 - **Root Directory**: `backend` ⚠️ **重要！**
 
 **构建和启动：**
+
 - **Runtime**: `Node`
 - **Build Command**: `npm install`
 - **Start Command**: `node src/server.js`
 
 **实例类型：**
+
 - **Instance Type**: `Free`
 
 **环境变量：**
-- **PORT**: `5000`
-- **NODE_ENV**: `production`
 
+- **PORT**: `5000`
+
+- **NODE_ENV**: `production`
 5. 点击"Create Web Service"
 
 ---
@@ -278,16 +284,19 @@ git push origin main
 #### 推荐的免费数据库服务：
 
 1. **Supabase** (推荐)
+   
    - 访问：https://supabase.com
    - 免费额度：500MB数据库
    - 支持PostgreSQL
 
 2. **Neon**
+   
    - 访问：https://neon.tech
    - 免费额度：0.5GB数据库
    - 支持PostgreSQL
 
 3. **PlanetScale**
+   
    - 访问：https://planetscale.com
    - 免费额度：5GB数据库
    - 支持MySQL
@@ -295,8 +304,11 @@ git push origin main
 #### 使用Supabase的步骤：
 
 1. 创建Supabase项目
+
 2. 获取数据库连接字符串
+
 3. 安装pg依赖：
+   
    ```bash
    cd backend
    npm install pg
@@ -313,6 +325,7 @@ git push origin main
 ### 检查1：Root Directory
 
 在Render Dashboard中：
+
 1. 点击服务名称
 2. 点击"Settings"
 3. 确认"Root Directory"为 `backend`
@@ -334,6 +347,7 @@ Server is running on port 5000
 ### 检查3：测试API
 
 访问：
+
 - https://employee-backend.onrender.com/health
 - https://employee-backend.onrender.com/api/employees
 
@@ -346,6 +360,7 @@ Server is running on port 5000
 **原因：** package.json格式错误
 
 **解决：**
+
 1. 检查package.json中的scripts字段
 2. 确保postinstall正确添加
 3. 重新提交代码
@@ -359,6 +374,7 @@ Server is running on port 5000
 **解决：**
 
 在Render的Build Command中使用：
+
 ```
 npm install --build-from-source
 ```
@@ -388,16 +404,19 @@ try {
 ## 推荐方案
 
 **对于当前项目，推荐使用方案一：**
+
 1. 添加postinstall脚本
 2. 确保Root Directory正确
 3. 在Render中重新部署
 
 **如果方案一失败，使用方案二：**
+
 1. 切换到better-sqlite3
 2. 修改所有数据库相关代码
 3. 重新部署
 
 **如果以上都失败，使用方案三：**
+
 1. 使用Supabase等外部数据库
 2. 修改数据库配置
 3. 重新部署
@@ -409,14 +428,17 @@ try {
 修复后端部署后：
 
 1. **验证API正常工作**
+   
    - 测试健康检查
    - 测试员工列表
    - 测试CRUD操作
 
 2. **更新前端环境变量**
+   
    - VITE_API_URL: `https://employee-backend.onrender.com/api`
 
 3. **测试前端功能**
+   
    - 员工列表
    - 添加/编辑/删除
    - 数据看板
@@ -428,14 +450,17 @@ try {
 如果问题仍未解决：
 
 1. **查看Render日志**
+   
    - https://dashboard.render.com
    - 查看详细的构建和运行日志
 
 2. **查看文档**
+   
    - https://render.com/docs
    - https://www.npmjs.com/package/sqlite3
 
 3. **社区支持**
+   
    - Stack Overflow
    - Render Community Discord
 

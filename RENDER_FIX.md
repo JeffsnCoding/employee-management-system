@@ -1,6 +1,7 @@
 # Render部署错误修复指南
 
 ## 错误信息
+
 ```
 Cannot find module '/opt/render/project/src/src/server.js'
 ```
@@ -34,6 +35,7 @@ Render在错误的路径中查找 `server.js` 文件。路径中多了一个 `sr
 4. 点击"Save Changes"
 
 **说明：**
+
 - 如果前后端在同一个仓库，Root Directory应该指向后端文件夹
 - 这样Render会在 `/opt/render/project/backend/` 中查找
 - package.json中的 `src/server.js` 就会正确解析为 `/opt/render/project/backend/src/server.js`
@@ -69,12 +71,14 @@ Render在错误的路径中查找 `server.js` 文件。路径中多了一个 `sr
 将 `backend/src/server.js` 移动到 `backend/server.js`：
 
 **Windows PowerShell:**
+
 ```powershell
 cd d:\TraeCode\week02\EmployeeManage\backend
 Move-Item -Path src\server.js -Destination server.js
 ```
 
 **Mac/Linux:**
+
 ```bash
 cd d:\TraeCode\week02\EmployeeManage\backend
 mv src/server.js server.js
@@ -85,11 +89,13 @@ mv src/server.js server.js
 需要更新所有引用server.js的文件：
 
 **backend/src/controllers/employeeController.js:**
+
 ```javascript
 // 如果有引用server.js的代码，需要更新路径
 ```
 
 **backend/src/routes/employees.js:**
+
 ```javascript
 // 如果有引用server.js的代码，需要更新路径
 ```
@@ -159,11 +165,13 @@ git push
 4. 查找以下成功信息：
 
 **成功标志：**
+
 ```
 Server is running on port 5000
 ```
 
 **失败标志：**
+
 ```
 Cannot find module 'xxx'
 Error: listen EADDRINUSE
@@ -172,15 +180,18 @@ Error: listen EADDRINUSE
 ### 测试API
 
 1. 访问：`https://employee-backend.onrender.com/health`
+
 2. 应该看到：
-```json
-{
-  "status": "ok",
-  "message": "Server is running"
-}
-```
+   
+   ```json
+   {
+   "status": "ok",
+   "message": "Server is running"
+   }
+   ```
 
 3. 访问：`https://employee-backend.onrender.com/api/employees`
+
 4. 应该看到员工数据列表
 
 ---
@@ -192,6 +203,7 @@ Error: listen EADDRINUSE
 **原因：** Render缓存了旧的配置
 
 **解决：**
+
 1. 删除现有服务
 2. 重新创建服务
 3. 正确设置Root Directory为 `backend`
@@ -203,6 +215,7 @@ Error: listen EADDRINUSE
 **原因：** 依赖安装失败
 
 **解决：**
+
 1. 检查package.json是否正确
 2. 确保所有依赖都在dependencies中
 3. 查看构建日志找出具体错误
@@ -239,6 +252,7 @@ if (!fs.existsSync(dbPath)) {
 ### 如果前后端在同一个仓库：
 
 **使用方案一（修改Render配置）：**
+
 1. Root Directory设置为 `backend`
 2. Build Command: `npm install`
 3. Start Command: `node src/server.js`
@@ -246,6 +260,7 @@ if (!fs.existsSync(dbPath)) {
 ### 如果前后端在不同仓库：
 
 **使用方案二（修改package.json）：**
+
 1. 将server.js移到backend根目录
 2. 修改main字段为 `server.js`
 3. Root Directory保持为空或 `./`
@@ -253,6 +268,7 @@ if (!fs.existsSync(dbPath)) {
 ### 如果需要精确控制：
 
 **使用方案三（render.yaml）：**
+
 1. 创建render.yaml配置文件
 2. 重新创建服务
 3. Render自动应用配置

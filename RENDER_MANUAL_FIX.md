@@ -52,17 +52,20 @@ git push origin main
 #### 3.2 配置服务参数
 
 **基本信息：**
+
 - **Name**: `employee-backend`
 - **Region**: 选择 `Singapore`（新加坡，亚洲访问快）
 - **Branch**: 选择 `main`
 - **Root Directory**: 输入 `backend`（重要！）
 
 **构建和启动：**
+
 - **Runtime**: 选择 `Node`
 - **Build Command**: 输入 `npm install`
 - **Start Command**: 输入 `node src/server.js`
 
 **实例类型：**
+
 - **Instance Type**: 选择 `Free`
 
 #### 3.3 配置环境变量
@@ -70,10 +73,12 @@ git push origin main
 在"Environment"部分，点击"Add Environment Variable"，添加以下变量：
 
 **变量1：PORT**
+
 - Key: `PORT`
 - Value: `5000`
 
 **变量2：NODE_ENV**
+
 - Key: `NODE_ENV`
 - Value: `production`
 
@@ -90,6 +95,7 @@ git push origin main
 ### 检查1：Root Directory设置
 
 在Render Dashboard中：
+
 1. 点击服务名称
 2. 点击"Settings"标签
 3. 找到"Root Directory"字段
@@ -106,6 +112,7 @@ git push origin main
 3. 查找以下信息：
 
 **成功标志：**
+
 ```
 Building...
 Installing dependencies...
@@ -118,6 +125,7 @@ Server is running on port 5000
 ```
 
 **失败标志：**
+
 ```
 Cannot find module 'xxx'
 Error: listen EADDRINUSE
@@ -129,17 +137,22 @@ Error: listen EADDRINUSE
 ### 检查3：测试API
 
 **健康检查：**
+
 1. 打开浏览器
+
 2. 访问：`https://employee-backend.onrender.com/health`
+
 3. 应该看到：
-```json
-{
-  "status": "ok",
-  "message": "Server is running"
-}
-```
+   
+   ```json
+   {
+   "status": "ok",
+   "message": "Server is running"
+   }
+   ```
 
 **员工API：**
+
 1. 访问：`https://employee-backend.onrender.com/api/employees`
 2. 应该看到员工数据列表
 
@@ -177,11 +190,13 @@ Move-Item -Path src\server.js -Destination server.js
 需要更新以下文件中的路径：
 
 **backend/src/routes/employees.js:**
+
 ```javascript
 // 如果有引用server.js的代码，需要更新
 ```
 
 **backend/src/controllers/employeeController.js:**
+
 ```javascript
 // 如果有引用server.js的代码，需要更新
 ```
@@ -198,6 +213,7 @@ git push origin main
 #### A.5 重新配置Render
 
 在Render中：
+
 - Root Directory: `backend`
 - Start Command: `node server.js`
 
@@ -242,6 +258,7 @@ git push -u origin main
 **症状：** 路径显示为 `/opt/render/project/src/backend/`
 
 **解决：**
+
 1. 在Render Dashboard中点击服务
 2. 点击"Settings"
 3. 找到"Root Directory"
@@ -255,6 +272,7 @@ git push -u origin main
 **症状：** `Cannot find module 'sequelize'`
 
 **解决：**
+
 1. 检查package.json是否包含sequelize依赖
 2. 确认Build Command是 `npm install`
 3. 查看构建日志，确认依赖已安装
@@ -266,6 +284,7 @@ git push -u origin main
 **症状：** `Database not found, initializing...` 后没有成功信息
 
 **解决：**
+
 1. 检查server.js中的数据库路径
 2. 确认database目录权限
 3. 查看详细错误日志
@@ -277,6 +296,7 @@ git push -u origin main
 **症状：** `Error: listen EADDRINUSE :::5000`
 
 **解决：**
+
 1. 确认PORT环境变量设置为5000
 2. 检查是否有其他进程占用端口
 3. 尝试使用其他端口（如3000）
@@ -326,16 +346,19 @@ NODE_ENV: production
 后端部署成功后：
 
 1. **更新前端环境变量**
+   
    - 访问Vercel Dashboard
    - 进入前端项目设置
    - 更新 `VITE_API_URL` 为：`https://employee-backend.onrender.com/api`
 
 2. **测试前端**
+   
    - 访问前端URL
    - 测试所有功能
    - 验证前后端连接
 
 3. **监控服务**
+   
    - 定期查看Render日志
    - 监控服务状态
    - 检查API响应时间
@@ -347,14 +370,17 @@ NODE_ENV: production
 如果问题仍未解决：
 
 1. **查看Render日志**
+   
    - 访问 https://dashboard.render.com
    - 查看详细的错误信息
 
 2. **查看Render文档**
+   
    - https://render.com/docs
    - https://render.com/docs/web-services
 
 3. **联系Render支持**
+   
    - support@render.com
    - Render Community Discord
 

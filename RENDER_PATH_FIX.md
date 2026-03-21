@@ -1,6 +1,7 @@
 # Render部署路径错误修复指南
 
 ## 错误信息
+
 ```
 /opt/render/project/src/backend/node_modules/sequelize/lib/dialects/abstract/connection-manager.js:57
 ```
@@ -40,6 +41,7 @@ services:
 ```
 
 **关键配置说明：**
+
 - `rootDir: backend` - 指定后端代码在 `backend` 文件夹
 - `buildCommand: npm install` - 在backend目录下安装依赖
 - `startCommand: node src/server.js` - 启动服务器
@@ -78,6 +80,7 @@ async function startServer() {
 ```
 
 **功能说明：**
+
 - 自动创建数据库目录
 - 检查数据库文件是否存在
 - 如果不存在，自动初始化数据库并插入示例数据
@@ -128,20 +131,24 @@ git push origin main
 Render会自动检测 `render.yaml` 文件并预填充配置：
 
 **基本信息：**
+
 - **Name**: `employee-backend`（自动填充）
 - **Region**: `Singapore`（自动填充）
 - **Branch**: `main`（自动填充）
 - **Root Directory**: `backend`（自动填充）
 
 **构建和启动：**
+
 - **Build Command**: `npm install`（自动填充）
 - **Start Command**: `node src/server.js`（自动填充）
 
 **环境变量：**
+
 - **PORT**: `5000`（自动填充）
 - **NODE_ENV**: `production`（自动填充）
 
 **实例类型：**
+
 - **Instance Type**: `Free`
 
 #### 2.4 部署
@@ -161,6 +168,7 @@ Render会自动检测 `render.yaml` 文件并预填充配置：
 3. 查找以下成功信息：
 
 **成功标志：**
+
 ```
 Creating database directory...
 Database not found, initializing...
@@ -171,6 +179,7 @@ Server is running on port 5000
 ```
 
 **失败标志：**
+
 ```
 Cannot find module 'xxx'
 Error: listen EADDRINUSE
@@ -179,30 +188,35 @@ Error: listen EADDRINUSE
 #### 3.2 测试健康检查API
 
 1. 打开浏览器
+
 2. 访问：`https://employee-backend.onrender.com/health`
+
 3. 应该看到：
-```json
-{
-  "status": "ok",
-  "message": "Server is running"
-}
-```
+   
+   ```json
+   {
+   "status": "ok",
+   "message": "Server is running"
+   }
+   ```
 
 #### 3.3 测试员工API
 
 1. 访问：`https://employee-backend.onrender.com/api/employees`
+
 2. 应该看到员工数据列表：
-```json
-[
-  {
+   
+   ```json
+   [
+   {
     "id": 1,
     "employeeId": "EMP001",
     "name": "张三",
     ...
-  },
-  ...
-]
-```
+   },
+   ...
+   ]
+   ```
 
 ---
 
@@ -213,6 +227,7 @@ Error: listen EADDRINUSE
 **原因：** render.yaml文件未提交到GitHub
 
 **解决：**
+
 ```bash
 cd d:\TraeCode\week02\EmployeeManage
 git add render.yaml
@@ -231,10 +246,12 @@ git push
 检查日志中的具体错误信息：
 
 1. 如果是"Permission denied"：
+   
    - 修改server.js中的目录创建逻辑
    - 使用 `fs.mkdirSync(dbDir, { recursive: true, mode: 0o777 })`
 
 2. 如果是"Database locked"：
+   
    - 确保没有其他进程占用数据库
    - 删除旧的数据库文件，重新初始化
 
@@ -247,22 +264,25 @@ git push
 **解决：**
 
 1. 检查package.json格式：
-```bash
-cd backend
-npm install
-```
+   
+   ```bash
+   cd backend
+   npm install
+   ```
 
 2. 如果有依赖冲突，使用：
-```bash
-npm install --legacy-peer-deps
-```
+   
+   ```bash
+   npm install --legacy-peer-deps
+   ```
 
 3. 提交修复后的package.json：
-```bash
-git add package.json package-lock.json
-git commit -m "Fix package.json"
-git push
-```
+   
+   ```bash
+   git add package.json package-lock.json
+   git commit -m "Fix package.json"
+   git push
+   ```
 
 ---
 
@@ -286,11 +306,13 @@ git push
 **解决：**
 
 1. 确认API路径正确：
+   
    - 健康检查：`/health`
    - 员工列表：`/api/employees`
    - 搜索：`/api/employees/search`
 
 2. 检查路由文件：
+   
    - 确保 `backend/src/routes/employees.js` 存在
    - 确保路由正确导出
 
@@ -314,16 +336,19 @@ git push
 后端部署成功后：
 
 1. **更新前端环境变量**
+   
    - 访问Vercel Dashboard
    - 进入前端项目设置
    - 更新 `VITE_API_URL` 为：`https://employee-backend.onrender.com/api`
 
 2. **测试前端**
+   
    - 访问前端URL
    - 测试所有功能
    - 验证前后端连接
 
 3. **监控服务**
+   
    - 定期查看Render日志
    - 监控服务状态
    - 检查API响应时间
@@ -357,19 +382,23 @@ services:
 server.js中的初始化逻辑：
 
 1. **创建数据库目录**
+   
    - 检查 `backend/database/` 目录是否存在
    - 如果不存在，自动创建
 
 2. **检查数据库文件**
+   
    - 检查 `employees.db` 文件是否存在
    - 如果不存在，运行初始化脚本
 
 3. **初始化数据库**
+   
    - 创建员工表
    - 插入10条示例数据
    - 关闭数据库连接
 
 4. **启动服务器**
+   
    - 监听指定端口
    - 输出启动信息
 
@@ -380,14 +409,17 @@ server.js中的初始化逻辑：
 如果问题仍未解决：
 
 1. **查看Render日志**
+   
    - 访问 https://dashboard.render.com
    - 查看详细的错误信息
 
 2. **查看Render文档**
+   
    - https://render.com/docs
    - https://render.com/docs/yaml-spec
 
 3. **联系Render支持**
+   
    - support@render.com
    - Render Community Discord
 
@@ -400,6 +432,7 @@ server.js中的初始化逻辑：
 **原因：** Root Directory配置不正确
 
 **解决方案：**
+
 1. ✅ 创建render.yaml配置文件
 2. ✅ 修改server.js添加自动初始化
 3. ✅ 修复package.json格式
@@ -407,6 +440,7 @@ server.js中的初始化逻辑：
 5. ⏳ 验证部署成功
 
 **关键配置：**
+
 - `rootDir: backend` - 指定正确的根目录
 - `buildCommand: npm install` - 在backend目录下安装依赖
 - `startCommand: node src/server.js` - 启动服务器

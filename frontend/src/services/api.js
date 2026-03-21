@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: "https://api.jeffsncoding.uk"
+  baseURL: "https://api.jeffsncoding.uk/api",
   timeout: 10000
 })
 

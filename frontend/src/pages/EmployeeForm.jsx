@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Form, Input, Select, DatePicker, Button, message, Card, Spin, Space } from 'antd'
+import { Form, Input, Select, DatePicker, Button, message, Card, Spin, Space, Row, Col, Divider } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { employeeService } from '../services/employeeService'
+import { UserOutlined, TeamOutlined, PhoneOutlined, MailOutlined, DollarOutlined, CalendarOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
@@ -59,126 +60,216 @@ export default function EmployeeForm() {
   }
 
   return (
-    <Card>
-      <h2 style={{ marginBottom: 24 }}>{isEdit ? '编辑员工' : '添加员工'}</h2>
-      <Spin spinning={fetchLoading}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          initialValues={{
-            status: '在职',
-            gender: '男'
-          }}
-        >
-          <Form.Item
-            label="工号"
-            name="employeeId"
-            rules={[{ required: true, message: '请输入工号' }]}
-          >
-            <Input placeholder="请输入工号" />
-          </Form.Item>
+    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+      <Card>
+        <div style={{ marginBottom: 24 }}>
+          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>
+            {isEdit ? '编辑员工' : '添加员工'}
+          </h2>
+          <p style={{ margin: '8px 0 0 0', color: '#999' }}>
+            {isEdit ? '修改员工信息' : '填写员工基本信息'}
+          </p>
+        </div>
 
-          <Form.Item
-            label="姓名"
-            name="name"
-            rules={[{ required: true, message: '请输入姓名' }]}
+        <Spin spinning={fetchLoading}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            initialValues={{
+              status: '在职',
+              gender: '男'
+            }}
           >
-            <Input placeholder="请输入姓名" />
-          </Form.Item>
+            <Divider orientation="left">基本信息</Divider>
+            
+            <Row gutter={24}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="工号"
+                  name="employeeId"
+                  rules={[{ required: true, message: '请输入工号' }]}
+                >
+                  <Input 
+                    prefix={<UserOutlined />} 
+                    placeholder="请输入工号" 
+                    size="large"
+                  />
+                </Form.Item>
+              </Col>
 
-          <Form.Item
-            label="性别"
-            name="gender"
-            rules={[{ required: true, message: '请选择性别' }]}
-          >
-            <Select placeholder="请选择性别">
-              <Option value="男">男</Option>
-              <Option value="女">女</Option>
-            </Select>
-          </Form.Item>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="姓名"
+                  name="name"
+                  rules={[{ required: true, message: '请输入姓名' }]}
+                >
+                  <Input 
+                    prefix={<UserOutlined />} 
+                    placeholder="请输入姓名" 
+                    size="large"
+                  />
+                </Form.Item>
+              </Col>
 
-          <Form.Item
-            label="部门"
-            name="department"
-            rules={[{ required: true, message: '请选择部门' }]}
-          >
-            <Select placeholder="请选择部门">
-              <Option value="技术部">技术部</Option>
-              <Option value="产品部">产品部</Option>
-              <Option value="市场部">市场部</Option>
-              <Option value="销售部">销售部</Option>
-              <Option value="人力资源部">人力资源部</Option>
-              <Option value="财务部">财务部</Option>
-            </Select>
-          </Form.Item>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="性别"
+                  name="gender"
+                  rules={[{ required: true, message: '请选择性别' }]}
+                >
+                  <Select placeholder="请选择性别" size="large">
+                    <Option value="男">男</Option>
+                    <Option value="女">女</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Form.Item
-            label="职位"
-            name="position"
-            rules={[{ required: true, message: '请输入职位' }]}
-          >
-            <Input placeholder="请输入职位" />
-          </Form.Item>
+            <Row gutter={24}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="部门"
+                  name="department"
+                  rules={[{ required: true, message: '请选择部门' }]}
+                >
+                  <Select 
+                    placeholder="请选择部门" 
+                    size="large"
+                    prefix={<TeamOutlined />}
+                  >
+                    <Option value="技术部">技术部</Option>
+                    <Option value="产品部">产品部</Option>
+                    <Option value="市场部">市场部</Option>
+                    <Option value="销售部">销售部</Option>
+                    <Option value="人力资源部">人力资源部</Option>
+                    <Option value="财务部">财务部</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
 
-          <Form.Item
-            label="入职日期"
-            name="hireDate"
-            rules={[{ required: true, message: '请选择入职日期' }]}
-          >
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="职位"
+                  name="position"
+                  rules={[{ required: true, message: '请输入职位' }]}
+                >
+                  <Input 
+                    prefix={<TeamOutlined />} 
+                    placeholder="请输入职位" 
+                    size="large"
+                  />
+                </Form.Item>
+              </Col>
 
-          <Form.Item
-            label="状态"
-            name="status"
-            rules={[{ required: true, message: '请选择状态' }]}
-          >
-            <Select placeholder="请选择状态">
-              <Option value="在职">在职</Option>
-              <Option value="离职">离职</Option>
-            </Select>
-          </Form.Item>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="入职日期"
+                  name="hireDate"
+                  rules={[{ required: true, message: '请选择入职日期' }]}
+                >
+                  <DatePicker 
+                    style={{ width: '100%' }} 
+                    size="large"
+                    suffixIcon={<CalendarOutlined />}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Form.Item
-            label="联系电话"
-            name="phone"
-            rules={[{ required: true, message: '请输入联系电话' }]}
-          >
-            <Input placeholder="请输入联系电话" />
-          </Form.Item>
+            <Divider orientation="left">联系信息</Divider>
 
-          <Form.Item
-            label="邮箱"
-            name="email"
-            rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' }
-            ]}
-          >
-            <Input placeholder="请输入邮箱" />
-          </Form.Item>
+            <Row gutter={24}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="联系电话"
+                  name="phone"
+                  rules={[{ required: true, message: '请输入联系电话' }]}
+                >
+                  <Input 
+                    prefix={<PhoneOutlined />} 
+                    placeholder="请输入联系电话" 
+                    size="large"
+                  />
+                </Form.Item>
+              </Col>
 
-          <Form.Item
-            label="薪资"
-            name="salary"
-            rules={[{ required: true, message: '请输入薪资' }]}
-          >
-            <Input type="number" placeholder="请输入薪资" />
-          </Form.Item>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="邮箱"
+                  name="email"
+                  rules={[
+                    { required: true, message: '请输入邮箱' },
+                    { type: 'email', message: '请输入有效的邮箱地址' }
+                  ]}
+                >
+                  <Input 
+                    prefix={<MailOutlined />} 
+                    placeholder="请输入邮箱" 
+                    size="large"
+                  />
+                </Form.Item>
+              </Col>
 
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                {isEdit ? '更新' : '添加'}
-              </Button>
-              <Button onClick={() => navigate('/employees')}>
-                取消
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Spin>
-    </Card>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="薪资"
+                  name="salary"
+                  rules={[{ required: true, message: '请输入薪资' }]}
+                >
+                  <Input 
+                    prefix={<DollarOutlined />} 
+                    type="number" 
+                    placeholder="请输入薪资" 
+                    size="large"
+                    addonAfter="元"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Divider orientation="left">状态信息</Divider>
+
+            <Row gutter={24}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item
+                  label="状态"
+                  name="status"
+                  rules={[{ required: true, message: '请选择状态' }]}
+                >
+                  <Select placeholder="请选择状态" size="large">
+                    <Option value="在职">在职</Option>
+                    <Option value="离职">离职</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Divider />
+
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Space size="large">
+                <Button 
+                  type="primary" 
+                  htmlType="submit" 
+                  loading={loading}
+                  size="large"
+                  style={{ minWidth: 120 }}
+                >
+                  {isEdit ? '更新' : '添加'}
+                </Button>
+                <Button 
+                  onClick={() => navigate('/employees')}
+                  size="large"
+                  style={{ minWidth: 120 }}
+                >
+                  取消
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Spin>
+      </Card>
+    </div>
   )
 }

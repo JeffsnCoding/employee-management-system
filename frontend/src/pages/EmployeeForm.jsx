@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { employeeService } from '../services/employeeService'
 import { UserOutlined, TeamOutlined, PhoneOutlined, MailOutlined, DollarOutlined, CalendarOutlined } from '@ant-design/icons'
+import { useIsMobile, useIsTablet, useIsDesktop } from '../hooks/useBreakpoint'
 
 const { Option } = Select
 
@@ -13,6 +14,9 @@ export default function EmployeeForm() {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [fetchLoading, setFetchLoading] = useState(false)
+  const isMobile = useIsMobile()
+  const isTablet = useIsTablet()
+  const isDesktop = useIsDesktop()
   const isEdit = !!id
 
   const fetchEmployee = async () => {
@@ -60,13 +64,25 @@ export default function EmployeeForm() {
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ 
+      padding: isMobile ? '12px' : '24px', 
+      maxWidth: isMobile ? '100%' : '1200px', 
+      margin: '0 auto' 
+    }}>
       <Card>
         <div style={{ marginBottom: 24 }}>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>
+          <h2 style={{ 
+            margin: 0, 
+            fontSize: isMobile ? 20 : 24, 
+            fontWeight: 600 
+          }}>
             {isEdit ? '编辑员工' : '添加员工'}
           </h2>
-          <p style={{ margin: '8px 0 0 0', color: '#999' }}>
+          <p style={{ 
+            margin: '8px 0 0 0', 
+            color: '#999',
+            fontSize: isMobile ? 14 : 16
+          }}>
             {isEdit ? '修改员工信息' : '填写员工基本信息'}
           </p>
         </div>
@@ -83,7 +99,7 @@ export default function EmployeeForm() {
           >
             <Divider orientation="left">基本信息</Divider>
             
-            <Row gutter={24}>
+            <Row gutter={isMobile ? 12 : 24}>
               <Col xs={24} sm={12} md={8}>
                 <Form.Item
                   label="工号"
@@ -126,7 +142,7 @@ export default function EmployeeForm() {
               </Col>
             </Row>
 
-            <Row gutter={24}>
+            <Row gutter={isMobile ? 12 : 24}>
               <Col xs={24} sm={12} md={8}>
                 <Form.Item
                   label="部门"
@@ -179,7 +195,7 @@ export default function EmployeeForm() {
 
             <Divider orientation="left">联系信息</Divider>
 
-            <Row gutter={24}>
+            <Row gutter={isMobile ? 12 : 24}>
               <Col xs={24} sm={12} md={8}>
                 <Form.Item
                   label="联系电话"
@@ -230,7 +246,7 @@ export default function EmployeeForm() {
 
             <Divider orientation="left">状态信息</Divider>
 
-            <Row gutter={24}>
+            <Row gutter={isMobile ? 12 : 24}>
               <Col xs={24} sm={12} md={8}>
                 <Form.Item
                   label="状态"
@@ -248,20 +264,30 @@ export default function EmployeeForm() {
             <Divider />
 
             <Form.Item style={{ marginBottom: 0 }}>
-              <Space size="large">
+              <Space 
+                size="large" 
+                direction={isMobile ? 'vertical' : 'horizontal'}
+                style={{ width: isMobile ? '100%' : 'auto' }}
+              >
                 <Button 
                   type="primary" 
                   htmlType="submit" 
                   loading={loading}
                   size="large"
-                  style={{ minWidth: 120 }}
+                  style={{ 
+                    minWidth: isMobile ? '100%' : 120,
+                    height: isMobile ? 48 : 'auto'
+                  }}
                 >
                   {isEdit ? '更新' : '添加'}
                 </Button>
                 <Button 
                   onClick={() => navigate('/employees')}
                   size="large"
-                  style={{ minWidth: 120 }}
+                  style={{ 
+                    minWidth: isMobile ? '100%' : 120,
+                    height: isMobile ? 48 : 'auto'
+                  }}
                 >
                   取消
                 </Button>

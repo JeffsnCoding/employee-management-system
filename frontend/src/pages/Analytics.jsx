@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react'
 import { Card, Row, Col, Spin, message } from 'antd'
 import ReactECharts from 'echarts-for-react'
 import api from '../services/api'
+import { useIsMobile, useIsTablet, useIsDesktop } from '../hooks/useBreakpoint'
 
 export default function Analytics() {
+  const isMobile = useIsMobile()
+  const isTablet = useIsTablet()
+  const isDesktop = useIsDesktop()
   const [loading, setLoading] = useState(false)
   const [departmentData, setDepartmentData] = useState([])
   const [salaryData, setSalaryData] = useState([])
@@ -41,22 +45,28 @@ export default function Analytics() {
     title: {
       text: '各部门员工数量分布',
       left: 'center',
-      top: 20
+      top: isMobile ? 10 : 20,
+      textStyle: {
+        fontSize: isMobile ? 14 : 16
+      }
     },
     tooltip: {
       trigger: 'item',
       formatter: '{b}: {c}人 ({d}%)'
     },
     legend: {
-      orient: 'vertical',
-      left: 'left',
-      top: 'middle'
+      orient: isMobile ? 'horizontal' : 'vertical',
+      left: isMobile ? 'center' : 'left',
+      top: isMobile ? 'bottom' : 'middle',
+      textStyle: {
+        fontSize: isMobile ? 10 : 12
+      }
     },
     series: [
       {
         name: '员工数量',
         type: 'pie',
-        radius: ['40%', '70%'],
+        radius: isMobile ? ['30%', '60%'] : ['40%', '70%'],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 10,
@@ -70,7 +80,7 @@ export default function Analytics() {
         emphasis: {
           label: {
             show: true,
-            fontSize: 20,
+            fontSize: isMobile ? 14 : 20,
             fontWeight: 'bold'
           }
         },
@@ -86,7 +96,10 @@ export default function Analytics() {
     title: {
       text: '各职位平均薪资',
       left: 'center',
-      top: 20
+      top: isMobile ? 10 : 20,
+      textStyle: {
+        fontSize: isMobile ? 14 : 16
+      }
     },
     tooltip: {
       trigger: 'axis',
@@ -96,24 +109,26 @@ export default function Analytics() {
       formatter: '{b}: ¥{c}'
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
+      left: isMobile ? '5%' : '3%',
+      right: isMobile ? '8%' : '4%',
+      bottom: isMobile ? '15%' : '3%',
       containLabel: true
     },
     xAxis: {
       type: 'category',
       data: salaryData.map(item => item.name),
       axisLabel: {
-        interval: 0,
-        rotate: 30
+        interval: isMobile ? 0 : 'auto',
+        rotate: isMobile ? 45 : 30,
+        fontSize: isMobile ? 10 : 12
       }
     },
     yAxis: {
       type: 'value',
       name: '薪资（元）',
       axisLabel: {
-        formatter: '¥{value}'
+        formatter: '¥{value}',
+        fontSize: isMobile ? 10 : 12
       }
     },
     series: [
@@ -126,28 +141,31 @@ export default function Analytics() {
           borderRadius: [4, 4, 0, 0]
         },
         label: {
-          show: true,
+          show: !isMobile,
           position: 'top',
-          formatter: '¥{c}'
+          formatter: '¥{c}',
+          fontSize: isMobile ? 10 : 12
         }
       }
     ]
   }
 
   return (
-    <Spin spinning={loading}>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={12}>
-          <Card>
-            <ReactECharts option={pieOption} style={{ height: '400px' }} />
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card>
-            <ReactECharts option={barOption} style={{ height: '400px' }} />
-          </Card>
-        </Col>
-      </Row>
-    </Spin>
+    <div style={{ padding: isMobile ? '12px' : '24px' }}>
+      <Spin spinning={loading}>
+        <Row gutter={[isMobile ? 12 : 16, isMobile ? 12 : 16]}>
+          <Col xs={24} lg={12}>
+            <Card>
+              <ReactECharts option={pieOption} style={{ height: isMobile ? '300px' : '400px' }} />
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card>
+              <ReactECharts option={barOption} style={{ height: isMobile ? '300px' : '400px' }} />
+            </Card>
+          </Col>
+        </Row>
+      </Spin>
+    </div>
   )
 }

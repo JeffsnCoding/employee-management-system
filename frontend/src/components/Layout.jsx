@@ -81,7 +81,18 @@ export default function Layout() {
     <AntLayout style={{ minHeight: '100vh' }}>
       {isDesktop ? (
         <>
-          <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+          <Sider 
+            collapsible 
+            collapsed={collapsed} 
+            onCollapse={setCollapsed}
+            style={{ 
+              position: 'fixed',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              zIndex: 1000
+            }}
+          >
             <div style={{ 
               height: 32, 
               margin: 16, 
@@ -102,13 +113,18 @@ export default function Layout() {
               items={menuItems}
             />
           </Sider>
-          <AntLayout>
+          <AntLayout style={{ marginLeft: collapsed ? 80 : 200 }}>
             <Header style={{ 
               padding: '0 24px', 
               background: '#fff',
               display: 'flex',
               alignItems: 'center',
-              borderBottom: '1px solid #f0f0f0'
+              borderBottom: '1px solid #f0f0f0',
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              left: collapsed ? 80 : 200,
+              zIndex: 999
             }}>
               <h2 style={{ margin: 0, marginRight: 'auto' }}>员工信息管理仪表盘</h2>
               <Tabs
@@ -128,8 +144,16 @@ export default function Layout() {
                 ]}
               />
             </Header>
-            <Content style={{ margin: '24px', background: '#fff', padding: 24, borderRadius: 8 }}>
-              <Outlet />
+            <Content style={{ 
+              marginTop: '64px',
+              margin: '24px',
+              background: '#f5f5f5',
+              padding: 0,
+              borderRadius: 8,
+              minHeight: 'calc(100vh - 64px)',
+              overflow: 'hidden'
+            }}>
+              <Outlet context={{ collapsed }} />
             </Content>
           </AntLayout>
         </>
@@ -162,7 +186,7 @@ export default function Layout() {
             padding: isMobile ? '12px' : '24px',
             background: '#f5f5f5'
           }}>
-            <Outlet />
+            <Outlet context={{ collapsed: false }} />
           </Content>
           <AntLayout.Footer style={{ 
             position: 'fixed',

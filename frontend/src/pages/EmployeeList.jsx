@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Table, Button, Input, Space, message, Popconfirm, Select, Card, Tag, Row, Col, Drawer } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined, PhoneOutlined, MailOutlined, DollarOutlined, TeamOutlined, UserOutlined, CalendarOutlined, MenuOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import { employeeService } from '../services/employeeService'
 import { useIsMobile, useIsTablet, useIsDesktop } from '../hooks/useBreakpoint'
 
@@ -9,6 +9,7 @@ const { Option } = Select
 
 export default function EmployeeList() {
   const navigate = useNavigate()
+  const { collapsed = false } = useOutletContext()
   const isMobile = useIsMobile()
   const isTablet = useIsTablet()
   const isDesktop = useIsDesktop()
@@ -18,6 +19,11 @@ export default function EmployeeList() {
   const [departmentFilter, setDepartmentFilter] = useState('')
   const [drawerVisible, setDrawerVisible] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState(null)
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0
+  })
 
   const fetchEmployees = useCallback(async () => {
     try {
@@ -25,15 +31,21 @@ export default function EmployeeList() {
       const params = {}
       if (searchText) params.search = searchText
       if (departmentFilter) params.department = departmentFilter
+      params.page = pagination.current
+      params.pageSize = pagination.pageSize
       const data = await employeeService.getAll(params)
-      setEmployees(data)
+      setEmployees(data.list || data)
+      setPagination(prev => ({
+        ...prev,
+        total: data.total || data.length
+      }))
     } catch (error) {
       console.error('获取员工列表失败:', error)
       message.error('获取员工列表失败')
     } finally {
       setLoading(false)
     }
-  }, [searchText, departmentFilter])
+  }, [searchText, departmentFilter, pagination.current, pagination.pageSize])
 
   useEffect(() => {
     fetchEmployees()
@@ -114,11 +126,12 @@ export default function EmployeeList() {
       title: '操作',
       key: 'action',
       fixed: 'right',
-      width: 150,
+      width: 180,
       render: (_, record) => (
-        <Space size="middle">
+        <Space size="small">
           <Button
             type="link"
+            size="small"
             icon={<EditOutlined />}
             onClick={() => navigate(`/employees/edit/${record.id}`)}
           >
@@ -131,7 +144,12 @@ export default function EmployeeList() {
             okText="确定"
             cancelText="取消"
           >
-            <Button type="link" danger icon={<DeleteOutlined />}>
+            <Button 
+              type="link" 
+              danger 
+              size="small"
+              icon={<DeleteOutlined />}
+            >
               删除
             </Button>
           </Popconfirm>
@@ -154,6 +172,15 @@ export default function EmployeeList() {
   const handleReset = () => {
     setSearchText('')
     setDepartmentFilter('')
+    setPagination(prev => ({ ...prev, current: 1 }))
+  }
+
+  const handleTableChange = (paginationConfig) => {
+    setPagination({
+      current: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+      total: paginationConfig.total
+    })
   }
 
   const renderMobileCard = (employee) => (
@@ -280,73 +307,141 @@ export default function EmployeeList() {
   }
 
   return (
-    <div style={{ padding: isMobile ? '12px' : '24px' }}>
-      <Card>
-        <div style={{ 
-          marginBottom: 16, 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          flexDirection: isMobile ? 'column' : 'row',
-          gap: isMobile ? 12 : 0
+    <div style={{ 
+      padding: '16px',
+      margin: 0,
+      minHeight: '100vh - 64px',
+      background: '#f0f2f5'
+    }}>
+      <div style={{ 
+        width: '100%'
+      }}>
+        <Card style={{ 
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+          margin: 0,
+          borderRadius: '8px'
         }}>
-          <Space size="middle" style={{ width: isMobile ? '100%' : 'auto' }}>
-            <Input
-              placeholder="搜索员工姓名或工号"
-              prefix={<SearchOutlined />}
-              style={{ width: isMobile ? '100%' : 300 }}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              allowClear
-            />
-            <Select
-              placeholder="选择部门"
-              style={{ width: isMobile ? '100%' : 150 }}
-              value={departmentFilter}
-              onChange={setDepartmentFilter}
-              allowClear
-            >
-              <Option value="技术部">技术部</Option>
-              <Option value="产品部">产品部</Option>
-              <Option value="市场部">市场部</Option>
-              <Option value="销售部">销售部</Option>
-              <Option value="人力资源部">人力资源部</Option>
-              <Option value="财务部">财务部</Option>
-            </Select>
-            <Button icon={<ReloadOutlined />} onClick={handleReset}>
-              重置
-            </Button>
-          </Space>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate('/employees/add')}
-            style={{ width: isMobile ? '100%' : 'auto' }}
-          >
-            添加员工
-          </Button>
-        </div>
-
-        {isMobile ? (
-          <div>
-            {employees.map(renderMobileCard)}
+          <div style={{ 
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            marginBottom: '16px'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              flexDirection: isMobile ? 'column' : 'row',
+              gap: isMobile ? 16 : 0
+            }}>
+              {isMobile ? (
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <Input
+                    placeholder="搜索员工姓名或工号"
+                    prefix={<SearchOutlined />}
+                    style={{ width: '100%' }}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    allowClear
+                  />
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <Select
+                      placeholder="选择部门"
+                      style={{ flex: 1 }}
+                      value={departmentFilter}
+                      onChange={setDepartmentFilter}
+                      allowClear
+                    >
+                      <Option value="技术部">技术部</Option>
+                      <Option value="产品部">产品部</Option>
+                      <Option value="市场部">市场部</Option>
+                      <Option value="销售部">销售部</Option>
+                      <Option value="人力资源部">人力资源部</Option>
+                      <Option value="财务部">财务部</Option>
+                    </Select>
+                    <Button icon={<ReloadOutlined />} onClick={handleReset}>
+                      重置
+                    </Button>
+                  </div>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => navigate('/employees/add')}
+                    style={{ width: '100%' }}
+                  >
+                    添加员工
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Space size="middle">
+                    <Input
+                      placeholder="搜索员工姓名或工号"
+                      prefix={<SearchOutlined />}
+                      style={{ width: 320 }}
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
+                      allowClear
+                    />
+                    <Select
+                      placeholder="选择部门"
+                      style={{ width: 160 }}
+                      value={departmentFilter}
+                      onChange={setDepartmentFilter}
+                      allowClear
+                    >
+                      <Option value="技术部">技术部</Option>
+                      <Option value="产品部">产品部</Option>
+                      <Option value="市场部">市场部</Option>
+                      <Option value="销售部">销售部</Option>
+                      <Option value="人力资源部">人力资源部</Option>
+                      <Option value="财务部">财务部</Option>
+                    </Select>
+                    <Button icon={<ReloadOutlined />} onClick={handleReset}>
+                      重置
+                    </Button>
+                  </Space>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => navigate('/employees/add')}
+                  >
+                    添加员工
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={employees}
-            loading={loading}
-            rowKey="id"
-            scroll={{ x: 1500 }}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showTotal: (total) => `共 ${total} 条记录`,
-              showQuickJumper: true
-            }}
-          />
-        )}
-      </Card>
+
+          {isMobile ? (
+            <div style={{ padding: '16px' }}>
+              {employees.map(renderMobileCard)}
+            </div>
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={employees}
+              loading={loading}
+              rowKey="id"
+              scroll={{ 
+                x: 1500, 
+                y: 'calc(100vh - 300px)',
+                fixed: true
+              }}
+              pagination={{
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                total: pagination.total,
+                showSizeChanger: true,
+                showTotal: (total) => `共 ${total} 条记录`,
+                showQuickJumper: true,
+                pageSizeOptions: ['10', '20', '50', '100']
+              }}
+              onChange={handleTableChange}
+            />
+          )}
+        </Card>
+      </div>
 
       <Drawer
         title="员工详情"

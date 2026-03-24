@@ -3,7 +3,7 @@ const { Op } = require('sequelize')
 
 const getAllEmployees = async (req, res) => {
   try {
-    const { search, department } = req.query
+    const { search, department, page = 1, pageSize = 10 } = req.query
     let where = {}
     
     if (search) {
@@ -19,8 +19,22 @@ const getAllEmployees = async (req, res) => {
       where.department = { [Op.like]: `%${department}%` }
     }
     
-    const employees = await Employee.findAll({ where })
-    res.json(employees)
+    const offset = (page - 1) * pageSize
+    const limit = parseInt(pageSize)
+    
+    const { count, rows } = await Employee.findAndCountAll({
+      where,
+      offset,
+      limit,
+      order: [['id', 'DESC']]
+    })
+    
+    res.json({
+      list: rows,
+      total: count,
+      current: parseInt(page),
+      pageSize: limit
+    })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
